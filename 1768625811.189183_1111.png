@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Track Complaint</title>
+
+    <style>
+
+        body{
+            font-family:Arial, sans-serif;
+            background:#f1f5f9;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            padding:20px;
+        }
+
+        .container{
+            background:white;
+            padding:40px;
+            border-radius:15px;
+            width:700px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:30px;
+            color:#2563eb;
+        }
+
+        input{
+            width:100%;
+            padding:12px;
+            margin-bottom:20px;
+            border:1px solid #ccc;
+            border-radius:8px;
+        }
+
+        button{
+            width:100%;
+            padding:12px;
+            background:#2563eb;
+            color:white;
+            border:none;
+            border-radius:8px;
+            font-size:16px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#1d4ed8;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:30px;
+        }
+
+        th, td{
+            padding:12px;
+            border:1px solid #ddd;
+            text-align:left;
+        }
+
+        th{
+            background:#2563eb;
+            color:white;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Track Complaints</h1>
+
+    <form method="POST">
+
+        <input type="email"
+               name="email"
+               placeholder="Enter Your Email"
+               required>
+
+        <button type="submit">
+            Track Complaints
+        </button>
+
+    </form>
+
+    {% if complaints %}
+
+    <table>
+
+        <tr>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Location</th>
+            <th>Status</th>
+        </tr>
+
+        {% for complaint in complaints %}
+
+        <tr>
+            <td>{{ complaint['id'] }}</td>
+            <td>{{ complaint['category'] }}</td>
+            <td>{{ complaint['description'] }}</td>
+            <td>{{ complaint['location'] }}</td>
+            <td>
+
+{% if complaint.status == 'Pending' %}
+    <span style="color: orange; font-weight: bold;">
+        Pending
+    </span>
+
+{% elif complaint.status == 'In Progress' %}
+    <span style="color: blue; font-weight: bold;">
+        In Progress
+    </span>
+
+{% elif complaint.status == 'Resolved' %}
+    <span style="color: green; font-weight: bold;">
+        Resolved
+    </span>
+
+{% endif %}
+
+</td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f4f8;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-container label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .login-container input {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .login-container button {
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .login-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .login-footer a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .flash-messages {
+            margin-top: 15px;
+            list-style: none;
+            color: red;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form action="{{ url_for('login') }}" method="POST">
+            <label>Email:</label>
+            <input type="email" name="email" placeholder="Enter your email" required>
+
+            <label>Password:</label>
+            <input type="password" name="password" placeholder="Enter your password" required>
+
+            <button type="submit">Login</button>
+
+            <div class="login-footer">
+                <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            </div>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="flash-messages">
+            {% for category, message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

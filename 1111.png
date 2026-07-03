@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Civic Issue Complaint System</title>
+
+    <!-- Leaflet Map CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <!-- Leaflet Map JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+
+        p {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .location-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .location-row input {
+            flex: 1;
+            background-color: #f9fafb;
+        }
+
+        .location-row button {
+            padding: 10px 14px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .location-row button:hover {
+            background-color: #1d4ed8;
+        }
+
+        #map {
+            height: 250px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #15803d;
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .admin-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .location-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Civic Issue Complaint System</h1>
+    <p>Report civic issues easily and responsibly.</p>
+
+    <form action="{{url_for('submit_complaint')}}" method="POST" enctype="multipart/form-data">
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" placeholder="Your name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Your email" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <select name="category" required>
+                <option value="">Select category</option>
+                <option>Potholes</option>
+                <option>Water Leakage</option>
+                <option>Streetlight</option>
+                <option>Garbage</option>
+                <option>Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" placeholder="Describe the issue"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Location *</label>
+            <div class="location-row">
+                <input type="text" id="locationInput" name="location" placeholder="Fetch your location" readonly>
+                <button type="button" onclick="getLocation()">Allow & Fetch</button>
+            </div>
+            <div id="map"></div>
+            <small id="locationStatus">Location not captured yet</small>
+        </div>
+
+        <div class="form-group">
+            <label>Upload Image / PDF *</label>
+            <input type="file" name="image" accept="image/*" required>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Complaint</button>
+        <div style="text-align:center; margin-top:20px;">
+
+    <a href="{{ url_for('track') }}"
+       style="
+            text-decoration:none;
+            background:#2563eb;
+            color:white;
+            padding:12px 20px;
+            border-radius:8px;
+            font-weight:bold;
+       ">
+
+        Track Complaint
+
+    </a>
+
+</div>
+    </form>
+
+    <div class="admin-link">
+        <a href="{{ url_for('login') }}">View Complaints (Admin)</a>
+    </div>
+</div>
+
+<script>
+    let map, marker;
+
+    function getLocation() {
+        if (!navigator.geolocation) {
+            alert("Geolocation not supported");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    }
+
+    function showPosition(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        document.getElementById("locationInput").value =
+            `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+
+        document.getElementById("locationStatus").innerText =
+            "Location captured successfully";
+
+        if (!map) {
+            map = L.map("map").setView([lat, lng], 15);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap contributors"
+            }).addTo(map);
+
+            marker = L.marker([lat, lng]).addTo(map)
+                .bindPopup("Complaint Location")
+                .openPopup();
+        } else {
+            map.setView([lat, lng], 15);
+            marker.setLatLng([lat, lng]);
+        }
+    }
+
+    function showError() {
+        document.getElementById("locationStatus").innerText =
+            "Location permission denied";
+    }
+</script>
+
+</body>
+</html>

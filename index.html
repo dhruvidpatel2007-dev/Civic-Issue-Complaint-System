@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Issue Complaint</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Civic Issue Complaint System</h1>
+        <p>Report civic issues easily and responsibly.</p>
+
+        
+
+        <form action="{{ url_for('submit_complaint') }}" method="POST" enctype="multipart/form-data" class="complaint-form">
+            <label>Name</label>
+            <input type="text" name="name" required>
+
+            <label>Email</label>
+            <input type="email" name="email" required>
+
+            <label>Category</label>
+            <select name="category" required>
+                <option value="">Select</option>
+                <option>Road Issue</option>
+                <option>Water Supply</option>
+                <option>Electricity</option>
+                <option>Garbage</option>
+                <option>Street Light</option>
+                <option>Other</option>
+            </select>
+
+            <!-- Description -->
+            <div class="form-group full">
+                <label>Description (optional)</label>
+                <textarea name="description" rows="4" placeholder="Describe the issue so authorities can understand it better (optional)"></textarea>
+            </div>
+
+            <div class="form-group full">
+                <label>Location *</label>
+                <input
+  type="text"
+  id="manual-location"
+  name="location"
+  placeholder="Fetching location automatically..."
+  readonly
+  required
+/>
+
+<button type="button" onclick="getLocation()" class="loc-btn">
+  Allow & Fetch Current Location
+</button>
+
+                
+                <p id="loc-status" class="loc-status">
+  Location not captured yet
+</p>
+                <div id="map" class="map-box"></div>
+            </div>
+
+            <label>Upload Image / PDF *</label>
+<input type="file" name="file" required>
+
+            <div class="form-group full submit-box">
+                <button type="submit" class="submit-btn">Submit Complaint</button>
+            </div>
+        </form>
+
+        <p class="admin-link">
+            <a href="{{ url_for('admin') }}">View Complaints (Admin)</a>
+        </p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>   
+.flash {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+.flash.success { background-color: #16a34a; color: white; }
+.flash.error { background-color: #dc2626; color: white; }

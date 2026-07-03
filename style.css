@@ -1,0 +1,17 @@
+import sqlite3
+
+conn = sqlite3.connect("complaints.db")
+
+cursor = conn.cursor()
+
+cursor.execute("""
+UPDATE users
+SET role = 'admin'
+WHERE email = 'patelpiyu3107@gmail.com'
+""")
+
+conn.commit()
+
+print("Admin role assigned successfully!")
+
+conn.close()
