@@ -18,3 +18,8 @@ A Flask-based web application for reporting and tracking civic issues.
 - SQLite
 
 ## How to Run
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
